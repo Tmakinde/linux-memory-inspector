@@ -1,0 +1,25 @@
+.gitignore
+  s_0ea57dc94c38e8::t_8da96fa07e0809 1-6,8-9
+  h_c5924376adbc05 7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.13",
+  "base_commit_sha": "599255374e97a3ea37bf34986f5434ab42b6f447",
+  "prompts": {},
+  "humans": {
+    "h_c5924376adbc05": {
+      "author": "tmakinde <makindet74@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_0ea57dc94c38e8": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5fb75936-533a-41f3-ac7a-b7a2e281ce5d",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "tmakinde <makindet74@gmail.com>"
+    }
+  }
+}
