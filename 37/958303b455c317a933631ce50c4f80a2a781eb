@@ -1,0 +1,14 @@
+README.md
+  h_c5924376adbc05 1-103
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.1",
+  "base_commit_sha": "37958303b455c317a933631ce50c4f80a2a781eb",
+  "prompts": {},
+  "humans": {
+    "h_c5924376adbc05": {
+      "author": "tmakinde <makindet74@gmail.com>"
+    }
+  }
+}
