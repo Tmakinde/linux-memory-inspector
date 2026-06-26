@@ -96,9 +96,12 @@ def feature_pressure(pid: int) -> None:
     if swap_total > 0:
         fmt_kv("SwapUsed",    f"{swap_used} kB",
                f"{swap_pct:.1f}% of swap consumed")
-        if swap_pct > 80:
+        if swap_pct > 80 and avail_pct <= 20:
             fmt_kv("Swap status", "WARNING",
-                   "heavy swap use — system is memory-constrained")
+                   "heavy swap use with low RAM — active memory pressure")
+        elif swap_pct > 80:
+            fmt_kv("Swap status", "HIGH USAGE",
+                   "many pages swapped out; RAM is healthy — likely cold/inactive pages")
         elif swap_pct > 20:
             fmt_kv("Swap status", "IN USE", "some pages swapped out")
         else:
@@ -127,6 +130,58 @@ def feature_pressure(pid: int) -> None:
     print()
     print("  Thresholds: LOW: avail>30%  |  MEDIUM: avail 20-30% (or avail<=30% + swap>80%)")
     print("              HIGH: avail<=10% + swap>90%  |  CRITICAL: avail<=5% + no swap relief")
+
+    print()
+    print("  -- Assessment --")
+    print()
+
+    signals = []
+
+    if avail_pct > 30:
+        signals.append(("OK",   f"Plenty of available RAM ({avail_pct:.0f}%)"))
+    elif avail_pct > 20:
+        signals.append(("WARN", f"Available RAM moderate ({avail_pct:.0f}%) — watch for growth"))
+    else:
+        signals.append(("CRIT", f"Available RAM low ({avail_pct:.0f}%) — pressure likely"))
+
+    if psi_full_avg10 == 0.0:
+        signals.append(("OK",   "No active memory stalls (PSI full avg10 = 0.00)"))
+    elif psi_full_avg10 < 1.0:
+        signals.append(("WARN", f"Minor stalls detected (PSI full avg10 = {psi_full_avg10:.2f}%)"))
+    else:
+        signals.append(("CRIT", f"Significant stalls (PSI full avg10 = {psi_full_avg10:.2f}%) — allocations blocked"))
+
+    reclaimable_kb = cached + s_reclaimable
+    reclaimable_pct = (reclaimable_kb / mem_total * 100) if mem_total else 0
+    if reclaimable_pct > 20:
+        signals.append(("OK",   f"Large reclaimable cache ({reclaimable_pct:.0f}% of RAM) — kernel has headroom"))
+    else:
+        signals.append(("WARN", f"Low reclaimable cache ({reclaimable_pct:.0f}%) — less room to maneuver"))
+
+    if swap_total > 0:
+        if swap_pct > 80 and avail_pct <= 20:
+            signals.append(("CRIT", f"Swap nearly full ({swap_pct:.0f}%) with low RAM — no relief valve"))
+        elif swap_pct > 80:
+            signals.append(("WARN", f"Swap heavily used ({swap_pct:.0f}%) — likely cold pages, RAM is still healthy"))
+        elif swap_pct > 20:
+            signals.append(("WARN", f"Swap in use ({swap_pct:.0f}%)"))
+        else:
+            signals.append(("OK",   f"Swap usage low ({swap_pct:.0f}%)"))
+
+    marker = {"OK": "OK  ", "WARN": "WARN", "CRIT": "CRIT"}
+    for kind, msg in signals:
+        print(f"    [{marker[kind]}] {msg}")
+
+    crits = sum(1 for k, _ in signals if k == "CRIT")
+    warns = sum(1 for k, _ in signals if k == "WARN")
+    print()
+    if crits:
+        print("  Conclusion: UNDER PRESSURE — investigate immediately.")
+    elif warns:
+        print("  Conclusion: MOSTLY HEALTHY — one or more indicators warrant monitoring.")
+    else:
+        print("  Conclusion: HEALTHY — no active memory pressure detected.")
+    print()
 
     concept(
         "Memory pressure escalates through three stages in the Linux kernel. "
