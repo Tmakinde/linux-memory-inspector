@@ -113,10 +113,10 @@ def feature_pressure(pid: int) -> None:
     if avail_pct <= 5 and (swap_total == 0 or swap_pct > 90):
         oom_level = "CRITICAL"
         oom_note  = "OOM kill imminent — RAM exhausted and no swap relief"
-    elif avail_pct <= 5 or (swap_total > 0 and swap_pct > 90):
+    elif avail_pct <= 5 or (avail_pct <= 10 and swap_total > 0 and swap_pct > 90):
         oom_level = "HIGH"
-        oom_note  = "OOM kill possible — RAM nearly gone or swap exhausted"
-    elif avail_pct <= 15 or (swap_total > 0 and swap_pct > 60):
+        oom_note  = "OOM kill possible — RAM critically low and swap nearly exhausted"
+    elif avail_pct <= 20 or (avail_pct <= 30 and swap_total > 0 and swap_pct > 80):
         oom_level = "MEDIUM"
         oom_note  = "Memory constrained; kswapd active, watch allocation latency"
     else:
@@ -125,8 +125,8 @@ def feature_pressure(pid: int) -> None:
 
     fmt_kv("OOM proximity", oom_level, oom_note)
     print()
-    print("  Thresholds: LOW: avail>20%  |  MEDIUM: avail 10-20% or swap>60%")
-    print("              HIGH: avail<=5% or swap>90%  |  CRITICAL: both exhausted")
+    print("  Thresholds: LOW: avail>30%  |  MEDIUM: avail 20-30% (or avail<=30% + swap>80%)")
+    print("              HIGH: avail<=10% + swap>90%  |  CRITICAL: avail<=5% + no swap relief")
 
     concept(
         "Memory pressure escalates through three stages in the Linux kernel. "
