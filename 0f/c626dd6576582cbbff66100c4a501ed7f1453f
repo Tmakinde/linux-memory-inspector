@@ -1,0 +1,29 @@
+features/meminfo.py
+  s_a382441add5871::t_e420bc867afe70 77-105
+features/topprocs.py
+  s_a382441add5871::t_67c5cf84af6c50 1-93
+features/pressure.py
+  s_a382441add5871::t_c87cd6f9e3b2f0 17,35-39
+  s_a382441add5871::t_466849655f75c6 78,80
+  s_a382441add5871::t_07b66249b2dfc5 110-130
+features/__init__.py
+  s_a382441add5871::t_0b8a49b9207b9e 2,4
+helpers.py
+  s_a382441add5871::t_67f06402044d58 26-48
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.1",
+  "base_commit_sha": "0fc626dd6576582cbbff66100c4a501ed7f1453f",
+  "prompts": {},
+  "sessions": {
+    "s_a382441add5871": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "38908682-a16c-4bd4-8c91-447f01278244",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "tmakinde <makindet74@gmail.com>"
+    }
+  }
+}
