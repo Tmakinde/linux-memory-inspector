@@ -74,6 +74,35 @@ def feature_meminfo(pid: int) -> None:
     fmt_kv("AnonHugePages",   raw.get("AnonHugePages", "n/a"),
            "THP: transparent huge pages in use by processes")
 
+    print()
+    print("  -- Conclusion: Is memory actually full? --")
+
+    cache_and_buf = kb("Cached") + kb("Buffers") + kb("SReclaimable")
+    cache_pct     = (cache_and_buf / mem_total * 100) if mem_total else 0
+    avail_pct     = (mem_available / mem_total * 100) if mem_total else 0
+
+    if avail_pct > 20:
+        verdict = "HEALTHY"
+        note    = "MemAvailable is comfortable; no pressure"
+    elif cache_pct > 30 and avail_pct > 5:
+        verdict = "HEALTHY (cache-heavy)"
+        note    = "Low MemFree is page cache, NOT a shortage — kernel can reclaim it"
+    elif avail_pct > 10:
+        verdict = "MODERATE PRESSURE"
+        note    = "Limited reclaimable memory; monitor kswapd activity"
+    elif avail_pct > 5:
+        verdict = "HIGH PRESSURE"
+        note    = "Direct reclaim likely; allocations will stall"
+    else:
+        verdict = "CRITICAL"
+        note    = "OOM killer risk; add RAM or reduce workload"
+
+    fmt_kv("MemAvailable %",    f"{avail_pct:.1f}%",
+           f"{mem_available} kB of {mem_total} kB")
+    fmt_kv("Reclaimable cache", f"{cache_pct:.1f}%",
+           "Cached + Buffers + SReclaimable")
+    fmt_kv("Verdict",           verdict, note)
+
     concept(
         "MemFree is nearly useless as a 'free memory' indicator. Linux "
         "aggressively uses spare RAM as a page cache (Cached) — it is much "

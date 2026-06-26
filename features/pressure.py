@@ -14,6 +14,7 @@ def feature_pressure(pid: int) -> None:
     print("  -- Pressure Stall Information (PSI) --")
 
     psi_path = Path("/proc/pressure/memory")
+    psi_full_avg10 = 0.0
     if psi_path.exists():
         try:
             for line in psi_path.read_text().strip().splitlines():
@@ -31,6 +32,11 @@ def feature_pressure(pid: int) -> None:
                        "% of time stalled over last 300 s")
                 fmt_kv("total",  kvs.get("total", "n/a"),
                        "cumulative microseconds stalled since boot")
+                if kind == "full":
+                    try:
+                        psi_full_avg10 = float(kvs.get("avg10", "0"))
+                    except ValueError:
+                        pass
         except PermissionError:
             print("  [error] permission denied reading /proc/pressure/memory")
     else:
@@ -69,9 +75,9 @@ def feature_pressure(pid: int) -> None:
 
     def pressure_level(pct):
         if pct > 20:
-            return "OK",       "plenty of reclaimable memory"
+            return "LOW",      "plenty of reclaimable memory"
         elif pct > 10:
-            return "MODERATE", "kswapd may wake for background reclaim"
+            return "MEDIUM",   "kswapd may wake for background reclaim"
         elif pct > 5:
             return "HIGH",     "direct reclaim likely — allocations will stall"
         else:
@@ -100,6 +106,27 @@ def feature_pressure(pid: int) -> None:
     else:
         fmt_kv("SwapTotal",   "0 kB",
                "no swap configured — OOM kill is the only pressure relief valve")
+
+    print()
+    print("  -- OOM Proximity --")
+
+    if avail_pct <= 5 and (swap_total == 0 or swap_pct > 90):
+        oom_level = "CRITICAL"
+        oom_note  = "OOM kill imminent — RAM exhausted and no swap relief"
+    elif avail_pct <= 5 or (swap_total > 0 and swap_pct > 90):
+        oom_level = "HIGH"
+        oom_note  = "OOM kill possible — RAM nearly gone or swap exhausted"
+    elif avail_pct <= 15 or (swap_total > 0 and swap_pct > 60):
+        oom_level = "MEDIUM"
+        oom_note  = "Memory constrained; kswapd active, watch allocation latency"
+    else:
+        oom_level = "LOW"
+        oom_note  = "System has headroom; OOM kill not imminent"
+
+    fmt_kv("OOM proximity", oom_level, oom_note)
+    print()
+    print("  Thresholds: LOW: avail>20%  |  MEDIUM: avail 10-20% or swap>60%")
+    print("              HIGH: avail<=5% or swap>90%  |  CRITICAL: both exhausted")
 
     concept(
         "Memory pressure escalates through three stages in the Linux kernel. "
