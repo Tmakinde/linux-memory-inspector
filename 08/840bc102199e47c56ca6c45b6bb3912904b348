@@ -1,0 +1,46 @@
+features/pressure/display.py
+  s_3a393fbeb4afc8::t_f1e3668042fe9a 1-79
+features/topprocs/__init__.py
+  s_3a393fbeb4afc8::t_5a86027adb2e46 1-9
+features/overview/__init__.py
+  s_3a393fbeb4afc8::t_84f88f567d5a13 1-9
+features/topprocs/display.py
+  s_3a393fbeb4afc8::t_b29cd1dd16981f 1-50
+features/meminfo/__init__.py
+  s_3a393fbeb4afc8::t_5c3a81dcec7420 1-9
+features/pressure/__init__.py
+  s_3a393fbeb4afc8::t_e815508dbd20e7 1-9
+features/meminfo/display.py
+  s_3a393fbeb4afc8::t_0e7c6f92bced9d 4-6,9,11,24,64-66,68
+features/meminfo/logic.py
+  s_3a393fbeb4afc8::t_7730bb6d48854a 1-50
+features/overview/display.py
+  s_3a393fbeb4afc8::t_c48dc1a0d6ca25 3-12,15-17,20-21,23
+features/overview/logic.py
+  s_3a393fbeb4afc8::t_52b0d6af7011a7 1-27
+features/pressure/logic.py
+  s_3a393fbeb4afc8::t_1f226545c3be46 4-5,7-11,13,17-25,32,34,43,57-60,62-74,76-78,80-81,83-84,86-87,89-90,92-93,95,109,131,144,146,148-173
+features/topprocs/logic.py
+  s_3a393fbeb4afc8::t_7a2f3d4375077c 1-53
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "08840bc102199e47c56ca6c45b6bb3912904b348",
+  "prompts": {},
+  "humans": {
+    "h_c5924376adbc05": {
+      "author": "tmakinde <makindet74@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_3a393fbeb4afc8": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c523f91f-5d66-4b95-a9a7-1a91f39911bb",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "tmakinde <makindet74@gmail.com>"
+    }
+  }
+}
